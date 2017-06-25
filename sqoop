@@ -1,0 +1,32 @@
+# code
+#List all the databases
+sqoop list-databases --connect "jdbc:mysql://nn01.itversity.com/" --username user --password pwd
+
+#Show tables in retail_db database
+sqoop list-tables --connect "jdbc:mysql://nn01.itversity.com/retail_db" --username user --password pwd
+
+#run the SQL command on the table
+ sqoop eval --connect "jdbc:mysql://nn01.itversity.com/retail_db" \
+ --username user \
+ --password pwd \
+ --query "select count(1) from order_items"
+ 
+ #import data from database into hdfs
+ sqoop import \
+ --connect "jdbc:mysql://nn01.itversity.com/retail_db" \
+ --username user --password pwd \
+ --table orders \
+ --target-dir /user/sarangdp/sqoop_demo/orders
+ 
+  #import data from database into hdfs as avro files(--as-avrodatafile, --as-textfile)
+  sqoop import --connect "jdbc:mysql://nn01.itversity.com/retail_db" \
+  --username user \
+  --password pwd \
+  --as-avrodatafile \
+  --table order_items \ 
+  --target-dir /user/sarangdp/sqoop_demo/order_items
+  
+  
+  
+
+ 
