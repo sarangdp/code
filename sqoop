@@ -26,6 +26,17 @@ sqoop list-tables --connect "jdbc:mysql://nn01.itversity.com/retail_db" --userna
   --table order_items \ 
   --target-dir /user/sarangdp/sqoop_demo/order_items
   
+  #import data from database into hive
+   sqoop import --connect "jdbc:mysql://nn01.itversity.com/retail_db"  \
+   --table departments \
+   --username user \
+   --password pwd \
+   --hive-import \
+   --hive-home /user/hive/warehouse \
+   --create-hive-table \
+   --hive-table sarang.departments
+
+  
   
   
 
