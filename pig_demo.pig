@@ -38,5 +38,26 @@ dump departmentIds;
   orders: {order_id: int,order_date: chararray,order_customer_id: int,order_status: chararray}
 order_limit = LIMIT orders 10;
 
+//equivalent to the above statement - LOAD data by applying the hive schema
+//run the describe formatted hiveTable command to get the hive path and delimiter details
+categories = LOAD 'hdfs://host:port/apps/hive/warehouse/sarang.db/categories' using PigStorage(',') 
+               as (category_id:int, category_department_id:int,category_name:chararray);
+categories_filter = FOREACH categories GENERATE category_id,category_name
+
+/**********Grouping***********/
+ orders = LOAD 'sarang.orders' using org.apache.hive.hcatalog.pig.HCatLoader();
+ orders_group_all = GROUP orders ALL;
+ orders_count = FOREACH orders_group_all GENERATE COUNT_STAR(orders) as cnt;
+ dump orders_count;
+ 
+ order_count_null = FILTER orders BY order_date == '' or order_status ==''; //Filtering the records
+ //Group the data of one or more pig relations
+ orders = LOAD 'sarang.orders' using org.apache.hive.hcatalog.pig.HCatLoader();
+ orders_cnt_status = GROUP orders BY order_status;
+ orders_cnt = FOREACH orders_cnt_status GENERATE group, COUNT_STAR(orders) AS cnt;
+ dump orders_cnt;
+ 
+
+
 
 
