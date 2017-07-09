@@ -35,6 +35,14 @@ sqoop list-tables --connect "jdbc:mysql://nn01.itversity.com/retail_db" --userna
    --hive-home /user/hive/warehouse \
    --create-hive-table \
    --hive-table sarang.departments
+   
+   ##SQoop import all the tables
+   sqoop import-all-tables \
+> -m 12 \
+> --connect "jdbc:mysql://nn01.itversity.com/retail_db" \
+> --username user \
+> --password pwd \
+> --warehouse-dir /user/sarangdp/sqoop_import
 
   
   
