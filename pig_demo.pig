@@ -57,7 +57,27 @@ categories_filter = FOREACH categories GENERATE category_id,category_name
  orders_cnt = FOREACH orders_cnt_status GENERATE group, COUNT_STAR(orders) AS cnt;
  dump orders_cnt;
  
+/*********Store data from pig relation into HDFS***********//
+depts = LOAD '/user/sarangdp/sqoop_import/departments';
+STORE depts INTO '/user/sarangdp/departments';
+/*********with different delimiter************/
+depts = LOAD '/user/sarangdp/sqoop_import/departments' using PigStorage(',') AS (department_id:int, department_name:chararray);
+STORE depts INTO '/user/sarangdp/departments' using PigStorage('|');
 
+/******Binary Storage*********/
+STORE depts INTO '/user/sarangdp/departments' using BinStorage('|');
+departments_bin = LOAD ' /user/sarangdp/departments' using BinStorage('|'); //loading the binary data
 
+/************JSON Storage************/
+STORE depts INTO '/user/sarangdp/departments' using JsonStorage();
 
+/******Stoaring the data in HIVe from Pig relation*****/
+//schema is mandatory. Column names should be same as in hive table
+deptDemo = LOAD '/user/sarangdp/sqoop_import/departments' using PigStorage(',') AS (department_id:int, department_name:chararray);
+STORE deptDemo INTO 'sarang.dept_demo' using org.apache.hive.hcatalog.pig.HCatStorer();
+
+/*****Sorting - ORDER BY****************************/
+ categories = LOAD 'sarang.categories' using org.apache.hive.hcatalog.pig.HCatLoader();
+cat_order = ORDER categories BY category_name desc;
+dump cat_order;
 
