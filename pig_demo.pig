@@ -81,3 +81,19 @@ STORE deptDemo INTO 'sarang.dept_demo' using org.apache.hive.hcatalog.pig.HCatSt
 cat_order = ORDER categories BY category_name desc;
 dump cat_order;
 
+/*****Removing duplicates- DISTINCT****************************/
+orders = LOAD '/user/sarangdp/sqoop_import/orders' using PigStorage(',');
+order_status = FOREACH orders GENERATE $3 as order_status;
+distStatus = DISTINCT order_status;
+
+/*********Specify the number of reduce tasks for a Pig MapReduce job********/
+//Session level
+set default_parallel 4;
+
+//command line
+ orders = LOAD 'sarang.orders' using org.apache.hive.hcatalog.pig.HCatLoader();
+orders = LOAD 'sarang.orders' using org.apache.hive.hcatalog.pig.HCatLoader();
+groupOrders = GROUP orders BY order_status PARALLEL 2;
+cntOrders = FOREACH groupOrders GENERATE group, COUNT_STAR(orders.order_id);
+dump cntOrders;
+ 
