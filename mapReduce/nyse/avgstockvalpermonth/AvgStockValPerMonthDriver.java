@@ -31,7 +31,7 @@ public class AvgStockValPerMonthDriver extends Configured implements Tool {
 		job.setMapOutputKeyClass(TextPair.class);
 		job.setMapOutputValueClass(LongPair.class);
 		
-		job.setPartitionerClass(SecondKeyTextPairPartitioner.class);
+		job.setPartitionerClass(SecondKeyTextPairPartitioner.class);//Partition the records based on the stock name
 		job.setCombinerClass(AvgStockValPerMonthCombiner.class);
 		job.setReducerClass(AvgStockValPerMonthReducer.class);		
 		
