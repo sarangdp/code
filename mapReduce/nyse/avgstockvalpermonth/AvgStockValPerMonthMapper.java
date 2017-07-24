@@ -1,5 +1,5 @@
-##Output key - TradeMonth-StockName
-##Output value - Volume-count(hardcoded to 1)
+##Output key - TextPair - TradeMonth-StockName
+##Output value -LongPair-  Volume-count(hardcoded to 1)
 
 package nyse.avgstockvalpermonth;
 
