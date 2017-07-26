@@ -96,4 +96,9 @@ orders = LOAD 'sarang.orders' using org.apache.hive.hcatalog.pig.HCatLoader();
 groupOrders = GROUP orders BY order_status PARALLEL 2;
 cntOrders = FOREACH groupOrders GENERATE group, COUNT_STAR(orders.order_id);
 dump cntOrders;
+
+//export data from hive table into CSV file
+orders = LOAD 'sarang.orders' using org.apache.hive.hcatalog.pig.HCatLoader();
+STORE orders INTO '/user/sarangdp/output/orders' using PigStorage('\t','-schema');
+hadoop fs -cat /user/sarangdp/output/orders/.pig_header /user/sarangdp/output/orders/part-m-00000 | hadoop fs -put - /user/sarangdp/csvoutput/result/output.csv
  
