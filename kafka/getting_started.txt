@@ -1,3 +1,7 @@
+##Update .bash_profile
+
+export KAFKA_HOME=/usr/hdp/2.5.0.0-1245/kafka
+PATH=$PATH:$HOME/.local/bin:$HOME/bin
 
 ##Create topic
 kafka-topics.sh --create \
