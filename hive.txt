@@ -1,0 +1,17 @@
+CREATE TABLE orders_part (
+  order_id int,
+  order_date string,
+  order_customer_id int,
+  order_status string
+)
+PARTITIONED BY (order_month string)
+ROW FORMAT DELIMITED FIELDS TERMINATED BY '|'
+STORED AS TEXTFILE;
+
+//SET below 2 parameters for partitioning
+
+set hive.exec.dynamic.partition.mode=nonstrict;
+set hive.exec.dynamic.partition=true;
+
+insert into orders_part partition(order_month)
+select order_id,order_date, order_customer_id, order_status, substring(order_date,1, 7) from orders;
