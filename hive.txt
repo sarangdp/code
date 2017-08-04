@@ -15,3 +15,11 @@ set hive.exec.dynamic.partition=true;
 
 insert into orders_part partition(order_month)
 select order_id,order_date, order_customer_id, order_status, substring(order_date,1, 7) from orders;
+
+/***date difference between current date and order_date****/
+ select order_id,order_date,datediff(substring(from_unixtime(unix_timestamp()),1,10),substring(order_date,1,10)) 
+ from orders limit 10;
+ 
+ /****to purge the 30 days old data*********/ 
+ select * from orders 
+ where datediff(substring(from_unixtime(unix_timestamp()),1,10),substring(order_date,1,10)) > 30
