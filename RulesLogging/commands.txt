@@ -1,0 +1,7 @@
+//Start the flume agent which reads the log file and publish the events to kafka
+flume-ng agent -n fksink -c /home/sarangdp/flume_example -f ruleFlumeAgent.conf
+
+spark-submit --class KafkaInt.RulesCount \
+--master yarn \
+--jars "/home/sarangdp/spark-jars/spark-core_2.10-1.6.2.jar,/home/sarangdp/spark-jars/spark-streaming_2.10-1.6.2.jar,/home/sarangdp/spark-jars/spark-streaming-kafka_2.10-1.6.2.jar,/home/sarangdp/spark-jars/kafka_2.10-0.8.2.1.jar,/home/sarangdp/spark-jars/metrics-core-2.2.0.jar" \
+sparkstream_2.10-1.0.jar
