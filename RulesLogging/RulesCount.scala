@@ -13,7 +13,7 @@ object RulesCount {
     val sparkConf = new SparkConf().setAppName("Rules count").setMaster("yarn-client");
 
     val topicSet = Set("kafkakp");
-    val kafkaParams = Map[String, String] ("metadata.broker.list" -> "nn02.itversity.com:6667");
+    val kafkaParams = Map[String, String] ("metadata.broker.list" -> "nn02.host.com:6667");
     val ssc = new StreamingContext(sparkConf, Seconds(60));
     val ruleLogs = KafkaUtils.createDirectStream[String, String, StringDecoder, StringDecoder](ssc, kafkaParams, topicSet);
 
