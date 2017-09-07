@@ -12,6 +12,7 @@ object RulesCount {
   def main(args: Array[String]) {
     val sparkConf = new SparkConf().setAppName("Rules count").setMaster("yarn-client");
 
+   //Set all the kafka queues where log events are published
     val topicSet = Set("kafkakp");
     val kafkaParams = Map[String, String] ("metadata.broker.list" -> "nn02.host.com:6667");
     val ssc = new StreamingContext(sparkConf, Seconds(60));
