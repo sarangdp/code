@@ -1,0 +1,25 @@
+##List all the databases
+
+sqoop list-databases \
+ --connect jdbc:mysql://host:3306 \
+ --username user \
+ --password password
+ 
+ ##List Tables for given database
+ 
+ sqoop list-tables \
+ --connect jdbc:mysql:/host:3306/retail_db \
+ --username user \
+ --password password
+ 
+ ##Run query using eval command
+ 
+  sqoop eval --connect jdbc:mysql://host:3306/retail_db \
+  --username user \
+  --password password \
+  -e "select * from orders limit 10"
+  
+  sqoop eval --connect jdbc:mysql://host:3306/retail_db \
+  --username user \
+  --password password \
+  --query "insert into orders values (99999, '2017-10-10 00:00:00', 999999,'DUMMY')"
