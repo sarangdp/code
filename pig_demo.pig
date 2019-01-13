@@ -6,6 +6,10 @@ grouped = GROUP words BY word;
 wordCount = FOREACH grouped GENERATE group, COUNT(words);
 dump wordCount;
 
+Pig- doesn't have additional daemon process. It uses MR and Yarn.
+
+to run pig file.--> pig -f <filename> -x <execution mode tez/mr/local>
+
 //store above code in pig_demo.pig
 pig -file pig_demo.pig //from gateway command line
 exec pig_demo.pig //from pig command line i.e. grunt
@@ -77,11 +81,13 @@ deptDemo = LOAD '/user/sarangdp/sqoop_import/departments' using PigStorage(',') 
 STORE deptDemo INTO 'sarang.dept_demo' using org.apache.hive.hcatalog.pig.HCatStorer();
 
 /*****Sorting - ORDER BY****************************/
+//(submit atleast 2 MR jobs for Order by)
  categories = LOAD 'sarang.categories' using org.apache.hive.hcatalog.pig.HCatLoader();
 cat_order = ORDER categories BY category_name desc;
 dump cat_order;
 
 /*****Removing duplicates- DISTINCT****************************/
+//distinct always apply on the relation and not on individual field
 orders = LOAD '/user/sarangdp/sqoop_import/orders' using PigStorage(',');
 order_status = FOREACH orders GENERATE $3 as order_status;
 distStatus = DISTINCT order_status;
