@@ -132,6 +132,13 @@ dump cntOrders;
   pig -f pig_demo.txt -useHCatalog -x tez
   
   //Default exec engine is mentioned in /etc/pig/conf/pig.properties
+  
+  //Register jar
+  REGISTER /usr/hdp/2.6.5.0-292/pig/piggybank.jar
+  deptName = FOREACH depts GENERATE dept_id, org.apache.pig.piggybank.evaluation.string.UPPER(dept_name) as depName;
+  //Alias can be defined instead whole package/path
+  DEFINE UPPER org.apache.pig.piggybank.evaluation.string.UPPER;
+  deptName = FOREACH depts GENERATE dept_id, UPPER(dept_name) as depName;
    
 //export data from hive table into CSV file
 orders = LOAD 'sarang.orders' using org.apache.hive.hcatalog.pig.HCatLoader();
