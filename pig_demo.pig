@@ -103,6 +103,36 @@ groupOrders = GROUP orders BY order_status PARALLEL 2;
 cntOrders = FOREACH groupOrders GENERATE group, COUNT_STAR(orders.order_id);
 dump cntOrders;
 
+/*********Inner Join - Default join is happen at reducer side********/ 
+  orders = LOAD 'sqoop_import.orders' USING org.apache.hive.hcatalog.pig.HCatLoader();
+  order_items = LOAD 'sqoop_import.order_items' USING org.apache.hive.hcatalog.pig.HCatLoader();
+  orderJoin = JOIN orders BY order_id, order_items BY order_item_order_id;
+  ordersByDate = FOREACH orderJoin GENERATE order_date,order_item_subtotal;
+  orderRevByDate = GROUP ordersByDate BY order_date;
+  orderRevByDateFinal = FOREACH orderRevByDate GENERATE group as orderDate, SUM(ordersByDate.order_item_subtotal) as revenue;
+
+/*********Left outer..orders which dont have order items********/ 
+  orderLeftJoin = JOIN orders BY order_id LEFT OUTER, order_items BY order_item_order_id;   
+  filterOrders = FILTER orderLeftJoin BY order_items::order_item_order_id IS NULL;
+  
+ /*********Right outer..order items which dont have orders********/ 
+  orderRightJoin = JOIN orders BY order_id RIGHT OUTER, order_items BY order_item_order_id;
+  filterOrderItems = FILTER orderRightJoin BY orders::order_id IS NULL;
+  
+  /****Replicated Join -replicate join is a special type of join that works well if one or more relations are small enough to 
+  fit into main memory. In such cases, Pig can perform a very efficient join because all of the hadoop work is done on the map side. 
+  In this type of join the large relation is followed by one or more small relations. 
+  The small relations must be small enough to fit into main memory; if they don't, the process fails and an error is generated.***/
+  
+  orderJoin = JOIN orders BY order_id, order_items BY order_item_order_id USING 'replicated';
+  
+  /****Execution mode***/
+  //Use -x switch
+  pig -f pig_demo.txt -useHCatalog -x mapreduce
+  pig -f pig_demo.txt -useHCatalog -x tez
+  
+  //Default exec engine is mentioned in /etc/pig/conf/pig.properties
+   
 //export data from hive table into CSV file
 orders = LOAD 'sarang.orders' using org.apache.hive.hcatalog.pig.HCatLoader();
 STORE orders INTO '/user/sarangdp/output/orders' using PigStorage('\t','-schema');
