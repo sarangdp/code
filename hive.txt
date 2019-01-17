@@ -1,3 +1,13 @@
+CREATE TABLE deck_of_cards (
+  color string,
+  color string,
+  pip string
+)
+ROW FORMAT DELIMITED FIELDS TERMINATED BY '|'
+STORED AS TEXTFILE;
+
+LOAD DATA LOCAL INPATH '/root/data/deckOfCards.txt' INTO TABLE deck_of_cards;
+----------------------------------------------------------------------------------------------------
 CREATE TABLE orders_part (
   order_id int,
   order_date string,
