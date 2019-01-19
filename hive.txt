@@ -8,6 +8,39 @@ STORED AS TEXTFILE;
 
 LOAD DATA LOCAL INPATH '/root/data/deckOfCards.txt' INTO TABLE deck_of_cards;
 ----------------------------------------------------------------------------------------------------
+/********************Writing the Hive QL query ****************************/
+//Get number of orders by order_status for date '2013-12-14' 
+SELECT order_status, count(*)
+FROM orders
+WHERE order_date ='2013-12-14 00:00:00.0'
+GROUP BY order_status;
+
+//Get number of complete orders for each day before '2013-12-14'
+SELECT order_date, count(*)
+FROM orders
+WHERE order_date < '2013-12-14 00:00:00.0' AND order_status = 'COMPLETE'
+GROUP BY order_date
+ORDER BY order_date;
+
+//GET each day pending,PENDING_PAYMENT or PAYMENT_REVIEW orders for month of Dec2013 
+
+SELECT order_date, count(*)
+FROM orders
+WHERE order_date like '2013-12%' 
+--WHERE order_date BETWEEN '2013-12-01 00:00:00.0' AND '2013-12-31 00:00:00.0'
+AND order_status in ('PENDING','PENDING_PAYMENT', 'PAYMENT_REVIEW')
+GROUP BY order_date
+ORDER BY order_date;
+----------------------------------------------------------------------------------------------------
+/********************Creating HIVE managed Tables ****************************/
+
+CREATE TABLE orders (order_id INT, 
+order_date DATE,
+order_customer_id INT,
+order_status VARCHAR(40))
+ROW FORMAT DELIMITED FIELDS TERMINATED BY ','
+STORED AS TEXTFILE;
+----------------------------------------------------------------------------------------------------
 CREATE TABLE orders_part (
   order_id int,
   order_date string,
