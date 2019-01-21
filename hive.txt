@@ -33,6 +33,9 @@ GROUP BY order_date
 ORDER BY order_date;
 ----------------------------------------------------------------------------------------------------
 /********************Creating HIVE managed Tables ****************************/
+To check hive metastore dir in hive_site.xml
+
+hive.metastore.warehouse.dir
 
 CREATE TABLE orders (order_id INT, 
 order_date DATE,
@@ -40,6 +43,25 @@ order_customer_id INT,
 order_status VARCHAR(40))
 ROW FORMAT DELIMITED FIELDS TERMINATED BY ','
 STORED AS TEXTFILE;
+
+/********************Creating External Tables ****************************/
+Copy to VM sandbox - >scp -P 2222 movie.txt root@localhost:~
+
+CREATE EXTERNAL TABLE deck_of_cards_ext ( 
+color string,
+suit string,
+pip string)
+COMMENT 'this is a external table'
+ROW FORMAT DELIMITED FIELDS TERMINATED BY '|'
+STORED AS TEXTFILE
+LOCATION '/user/root/cards';
+
+/********************Creating External Avro table from schema ****************************/
+CREATE EXTERNAL TABLE categories
+ROW FORMAT SERDE 'org.apache.hadoop.hive.serde2.avro.AvroSerDe'
+STORED AS AVRO
+LOCATION '/user/root/sqoop_import/retail_db/categories'
+TBLPROPERTIES('avro.schema.url'='/user/root/avro_schema/categories.avsc');
 ----------------------------------------------------------------------------------------------------
 CREATE TABLE orders_part (
   order_id int,
