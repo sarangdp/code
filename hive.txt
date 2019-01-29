@@ -62,7 +62,39 @@ ROW FORMAT SERDE 'org.apache.hadoop.hive.serde2.avro.AvroSerDe'
 STORED AS AVRO
 LOCATION '/user/root/sqoop_import/retail_db/categories'
 TBLPROPERTIES('avro.schema.url'='/user/root/avro_schema/categories.avsc');
+
+CREATE EXTERNAL TABLE order_items
+ROW FORMAT SERDE 'org.apache.hadoop.hive.serde2.avro.AvroSerDe'
+STORED AS AVRO
+LOCATION '/user/root/sqoop_import/retail_db/order_items'
+TBLPROPERTIES('avro.schema.url'='/user/root/avro_schema/order_items.avsc');
+
+CREATE EXTERNAL TABLE products
+ROW FORMAT SERDE 'org.apache.hadoop.hive.serde2.avro.AvroSerDe'
+STORED AS AVRO
+LOCATION '/user/root/sqoop_import/retail_db/products'
+TBLPROPERTIES('avro.schema.url'='/user/root/avro_schema/products.avsc');
+
+CREATE EXTERNAL TABLE departments
+ROW FORMAT SERDE 'org.apache.hadoop.hive.serde2.avro.AvroSerDe'
+STORED AS AVRO
+LOCATION '/user/root/sqoop_import/retail_db/departments'
+TBLPROPERTIES('avro.schema.url'='/user/root/avro_schema/departments.avsc');
+
 ----------------------------------------------------------------------------------------------------
+/********************Creating PARTITIONED TABLE ****************************/
+ CREATE TABLE orders (
+    > order_id int,
+    > order_date string,
+    > order_customer_id int,
+    > order_status string)
+    > PARTITIONED BY (order_month string)
+    > ROW FORMAT DELIMITED FIELDS TERMINATED BY '|'
+    > STORED AS textfile;
+    
+ /********************Add the partiton explicitly ****************************/   
+ alter table orders add partition(order_month='2014-01');
+
 CREATE TABLE orders_part (
   order_id int,
   order_date string,
@@ -74,17 +106,19 @@ ROW FORMAT DELIMITED FIELDS TERMINATED BY '|'
 STORED AS TEXTFILE;
 
 //SET below 2 parameters for partitioning
-
 set hive.exec.dynamic.partition.mode=nonstrict;
 set hive.exec.dynamic.partition=true;
 
-insert into orders_part partition(order_month)
-select order_id,order_date, order_customer_id, order_status, substring(order_date,1, 7) from orders;
-
-/***date difference between current date and order_date****/
- select order_id,order_date,datediff(substring(from_unixtime(unix_timestamp()),1,10),substring(order_date,1,10)) 
- from orders limit 10;
+INSERT INTO orders PARTITION (order_month)
+SELECT order_id, from_unixtime(cast(substr(order_date,1,10) as bigint)) order_date,           order_customer_id,order_status,substr(from_unixtime(cast(substr(order_date,1,10) as bigint)),1,7) order_month
+ FROM retail_stage.orders;
  
+ /********************Static Partition********************/
+ INSERT INTO orders PARTITION (order_month='2014-01')
+ SELECT order_id, from_unixtime(cast(substr(order_date,1,10) as bigint)) order_date, order_customer_id
+ FROM retail_stage.orders
+ WHERE substr(from_unixtime(cast(substr(order_date,1,10) as bigint)),1,7) = '2014-01';
+ ----------------------------------------------------------------------------------------------------
  /****to purge the 30 days old data*********/ 
  select * from orders 
  where datediff(substring(from_unixtime(unix_timestamp()),1,10),substring(order_date,1,10)) > 30
