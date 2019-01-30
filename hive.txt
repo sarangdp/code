@@ -115,9 +115,44 @@ SELECT order_id, from_unixtime(cast(substr(order_date,1,10) as bigint)) order_da
  
  /********************Static Partition********************/
  INSERT INTO orders PARTITION (order_month='2014-01')
- SELECT order_id, from_unixtime(cast(substr(order_date,1,10) as bigint)) order_date, order_customer_id
+ SELECT order_id, from_unixtime(cast(substr(order_date,1,10) as bigint)) order_date, order_customer_id,order_status
  FROM retail_stage.orders
  WHERE substr(from_unixtime(cast(substr(order_date,1,10) as bigint)),1,7) = '2014-01';
+ ----------------------------------------------------------------------------------------------------
+  /********************Bucketing********************/
+CREATE TABLE order_bucketed(
+order_id int,
+order_date string,
+order_customer_id int,
+order_status string)
+CLUSTERED BY (order_id) INTO 16 buckets
+ROW FORMAT DELIMITED FIELDS TERMINATED BY '|'
+STORED AS textfile;
+    
+  ** Calculate hash code for bucketed column and use MOD function of numer of buckets.
+  **Load command wont work with this table. Only insert.
+  **allows the user to do efficient sampling on the clustered column
+  
+ INSERT INTO order_bucketed
+ SELECT order_id, from_unixtime(cast(substr(order_date,1,10) as bigint)) order_date, order_customer_id,order_status
+ FROM retail_stage.orders
+ 
+  **Table sampling
+   Select * from order_bucketed tablesample(bucket 2 out of 16); //select only 1 bucket
+   Select * from order_bucketed tablesample(bucket 2 out of 8); //select only 2 buckets
+   
+  /********************Skewed Tables********************/
+CREATE TABLE order_bucketed_skew(
+order_id int,
+order_date string,
+order_customer_id int,
+order_status string)
+SKEWED BY(order_status) ON ('COMPLETE','PROCESSING','PENDING') [STORED AS DIRECTORIES];
+
+INSERT INTO order_bucketed_skew
+ SELECT order_id, from_unixtime(cast(substr(order_date,1,10) as bigint)) order_date, order_customer_id,order_status
+ FROM retail_stage.orders
+
  ----------------------------------------------------------------------------------------------------
  /****to purge the 30 days old data*********/ 
  select * from orders 
