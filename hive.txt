@@ -182,6 +182,15 @@ Hive supported file formats:
 5.ORC Files
 6.Parquet
 
+ /****LOAD DATA into table*********/ 
+**From Local
+ LOAD DATA LOCAL INPATH '/root/data/deckOfCards.txt' INTO TABLE deck_of_cards_local;
+ **From HDFS
+ LOAD DATA INPATH '/user/root/cards/deckOfCards.txt' INTO TABLE deck_of_cards_local;//This will append the data.Copy the file.
+ **To overwrite the data. (delete old files and copy new file)
+ LOAD DATA LOCAL INPATH '/root/data/deckOfCards.txt' OVERWRITE INTO TABLE deck_of_cards_local;
+
+
  /****to purge the 30 days old data*********/ 
  select * from orders 
  where datediff(substring(from_unixtime(unix_timestamp()),1,10),substring(order_date,1,10)) > 30
