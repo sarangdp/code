@@ -155,8 +155,33 @@ SKEWED BY(order_status) ON ('COMPLETE','PROCESSING','PENDING') [STORED AS DIRECT
 INSERT INTO order_bucketed_skew
  SELECT order_id, from_unixtime(cast(substr(order_date,1,10) as bigint)) order_date, order_customer_id,order_status
  FROM retail_stage.orders
-
  ----------------------------------------------------------------------------------------------------
+   /********************CTAS - create table as select*******************/
+CREATE TABLE orders_orc
+ROW FORMAT DELIMITED FIELDS TERMINATED BY ':'
+STORED AS ORC
+AS
+SELECT * FROM retail_stage.orders;
+
+CREATE TABLE `orders_orc_default`(
+  `order_id` int,
+  `order_date` bigint,
+  `order_customer_id` int,
+  `order_status` string)
+ROW FORMAT DELIMITED
+  FIELDS TERMINATED BY ':'
+STORED AS ORC;
+----------------------------------------------------------------------------------------------------
+/********************File Formats*******************/
+
+Hive supported file formats:
+1.Text File
+2.SequenceFile
+3.RCFile
+4.Avro Files
+5.ORC Files
+6.Parquet
+
  /****to purge the 30 days old data*********/ 
  select * from orders 
  where datediff(substring(from_unixtime(unix_timestamp()),1,10),substring(order_date,1,10)) > 30
