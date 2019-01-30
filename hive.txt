@@ -7,6 +7,9 @@ ROW FORMAT DELIMITED FIELDS TERMINATED BY '|'
 STORED AS TEXTFILE;
 
 LOAD DATA LOCAL INPATH '/root/data/deckOfCards.txt' INTO TABLE deck_of_cards;
+
+**To start beeline
+ beeline -u jdbc:hive2://localhost:10000/default -n username -p password
 ----------------------------------------------------------------------------------------------------
 /********************Writing the Hive QL query ****************************/
 //Get number of orders by order_status for date '2013-12-14' 
