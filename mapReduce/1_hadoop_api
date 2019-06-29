@@ -1,0 +1,12 @@
+Hadoop API
+
+1. Common -
+      File system -->org.apache.hadoop.fs
+      IO -->org.apache.hadoop.io
+      Util-->org.apache.hadoop.util
+      
+2. Mapreduce -  org.apache.hadoop.mapreduce
+      Mapper --> org.apache.hadoop.mapreduce.Mapper
+      Reducer --> org.apache.hadoop.mapreduce.Reducer
+      Partitioner --> org.apache.hadoop.mapreduce.Partitioner
+3. Yarn
