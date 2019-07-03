@@ -20,3 +20,5 @@ Mapper output-->Shuffle (Partitioning, Grouping)-->Sort-->Reducer
 
 Partitioning-->depends on number of reducer-->Default hash partition--> hash key % (mod functin) no.of reducer
 
+hadoop jar nyse.jar nyse.RecordCount /user/sarangdp/data/decks/deckofcards.txt /user/sarangdp/data/decks/output
+
