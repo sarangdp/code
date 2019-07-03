@@ -10,3 +10,13 @@ Hadoop API
       Reducer --> org.apache.hadoop.mapreduce.Reducer
       Partitioner --> org.apache.hadoop.mapreduce.Partitioner
 3. Yarn
+
+
+InputFormat-->FileInputFormat-->TextInputFormat
+
+OutputFormat-->FileOutputFormat-->TextOutputFormat
+
+Mapper output-->Shuffle (Partitioning, Grouping)-->Sort-->Reducer
+
+Partitioning-->depends on number of reducer-->Default hash partition--> hash key % (mod functin) no.of reducer
+
